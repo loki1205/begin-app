@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
@@ -27,6 +27,7 @@ export default function ProfilePage() {
   const [confirmReset, setConfirmReset] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [isEditingAvatar, setIsEditingAvatar] = useState(false);
+  const [pendingAvatar, setPendingAvatar] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const stats = useMemo(() => {
@@ -49,10 +50,13 @@ export default function ProfilePage() {
   const persona = getPersona(state.habits, state.logs);
 
   const toggleAvatarEditing = () => {
-    // toggle editing mode; when turning off, simply stop editing
-    setIsEditingAvatar((v) => !v);
     if (isEditingAvatar) {
-      showToast("Done editing profile photo");
+      setUserAvatar(pendingAvatar);
+      setIsEditingAvatar(false);
+      showToast("Profile photo saved");
+    } else {
+      setPendingAvatar(state.userAvatar ?? null);
+      setIsEditingAvatar(true);
     }
   };
 
@@ -86,8 +90,8 @@ export default function ProfilePage() {
     const reader = new FileReader();
     reader.onload = (ev) => {
       const dataUrl = ev.target?.result as string;
-      setUserAvatar(dataUrl);
-      showToast("Profile photo updated");
+      setPendingAvatar(dataUrl);
+      showToast("Profile photo ready to save");
     };
     reader.readAsDataURL(file);
     e.target.value = "";
@@ -97,6 +101,12 @@ export default function ProfilePage() {
     setToast(msg);
     setTimeout(() => setToast(null), 2400);
   };
+
+  useEffect(() => {
+    if (!isEditingAvatar) {
+      setPendingAvatar(state.userAvatar ?? null);
+    }
+  }, [state.userAvatar, isEditingAvatar]);
 
   if (!hydrated) return null;
 
@@ -135,14 +145,14 @@ export default function ProfilePage() {
       >
         <ProfileCard
           userName={state.userName}
-          userAvatar={state.userAvatar ?? null}
+          userAvatar={pendingAvatar}
           persona={persona}
           stats={stats}
           onShare={() => setShareOpen(true)}
           isEditing={isEditingAvatar}
           onToggleAvatarEdit={toggleAvatarEditing}
           onAvatarClick={isEditingAvatar ? () => avatarInputRef.current?.click() : undefined}
-          onRemoveAvatar={isEditingAvatar ? () => { setUserAvatar(null); showToast("Profile photo removed"); } : undefined}
+          onRemoveAvatar={isEditingAvatar ? () => { setPendingAvatar(null); showToast("Profile photo removed"); } : undefined}
         />
       </motion.div>
 
@@ -504,16 +514,17 @@ function ShareCard({
               </div>
               <div className="text-xs uppercase tracking-[0.3em] opacity-80">begin</div>
             </div>
-            <div className="w-16 h-16">
-              {userAvatar ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={userAvatar} alt={userName || "avatar"} className="w-full h-full object-cover rounded-[50%]" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
+            {userAvatar && (
+              <div className="w-16 h-16">
+                {userAvatar ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={userAvatar} alt={userName || "avatar"} className="w-full h-full object-cover rounded-[50%]" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
                     {userName.charAt(0).toUpperCase() || "B"}
                   </div>
                 )}
-            </div>
+            </div>)}
         </div>
 
         <div className="my-auto">
