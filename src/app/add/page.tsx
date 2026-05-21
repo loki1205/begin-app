@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight } from "lucide-react";
 import { useAppStore } from "@/lib/store";
-import { DAY_KEYS, DAY_LABELS, cn, getLevel } from "@/lib/utils";
+import { DAY_KEYS, DAY_LABELS, cn, calculateLevel } from "@/lib/utils";
 import type { DayKey } from "@/lib/utils";
 
 export default function AddHabitPage() {
@@ -35,7 +35,8 @@ export default function AddHabitPage() {
     router.push("/today");
   };
 
-  const level = getLevel(0);
+  const level = calculateLevel(0, 0);
+  const levelName = ["Seed", "Sprout", "Root", "Flow", "Anchor"][level - 1] || "Seed";
 
   if (!hydrated) return null;
 
@@ -124,7 +125,7 @@ export default function AddHabitPage() {
               Starting level
             </div>
             <div className="font-display text-lg tracking-tight">
-              Level {level.level} — {level.name}
+              Level {level} — {levelName}
             </div>
           </div>
           <div className="text-xs text-[var(--fg-tertiary)] italic">

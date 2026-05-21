@@ -38,7 +38,8 @@ export interface Habit {
   days: DayKey[];
   level: number;
   createdAt: string;
-  streak: number;
+  stabilityScore: number;
+  completionCount: number;
 }
 
 export interface HabitLog {
@@ -73,12 +74,54 @@ export function getDailyQuote(): string {
   return DAILY_QUOTES[dayOfYear % DAILY_QUOTES.length];
 }
 
-export function getLevel(streak: number): { level: number; name: string } {
-  if (streak < 7) return { level: 1, name: "Beginner" };
-  if (streak < 21) return { level: 2, name: "Practiced" };
-  if (streak < 60) return { level: 3, name: "Devoted" };
-  if (streak < 120) return { level: 4, name: "Ritualist" };
-  return { level: 5, name: "Master" };
+export const MAX_SCORE = 100;
+export const MIN_SCORE = 0;
+export const COMPLETE_REWARD = 1;
+export const MISS_PENALTY = 0.25;
+
+export function getScoreBasedLevel(score: number): number {
+  if (score <= 20) return 1; // Seed
+  if (score <= 40) return 2; // Sprout
+  if (score <= 60) return 3; // Root
+  if (score <= 80) return 4; // Flow
+  return 5; // Anchor
+}
+
+export function getAgeBasedMaxLevel(ageInDays: number): number {
+  if (ageInDays < 3) return 1;
+  if (ageInDays < 10) return 2;
+  if (ageInDays < 21) return 3;
+  if (ageInDays < 45) return 4;
+  return 5;
+}
+
+export function calculateLevel(stabilityScore: number, ageInDays: number): number {
+  const scoreLevel = getScoreBasedLevel(stabilityScore);
+  const ageLevel = getAgeBasedMaxLevel(ageInDays);
+  return Math.min(scoreLevel, ageLevel);
+}
+
+export function getHabitAgeInDays(createdAt: string): number {
+  const created = new Date(createdAt).getTime();
+  const now = Date.now();
+  const diffMs = now - created;
+  return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+}
+
+export function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}
+
+export function getCompletionCount(habit: Habit, logs: HabitLog[]): number {
+  const createdDay = formatDate(new Date(habit.createdAt));
+  const today = formatDate(new Date());
+  return logs.filter(
+    (log) =>
+      log.habitId === habit.id &&
+      log.status === "completed" &&
+      log.date >= createdDay &&
+      log.date <= today
+  ).length;
 }
 
 export function getPersona(habits: Habit[], logs: HabitLog[]): string {

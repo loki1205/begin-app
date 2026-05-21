@@ -35,14 +35,14 @@ export default function ProfilePage() {
     const skipped = state.logs.filter((l) => l.status === "skipped").length;
     const total = completed + skipped;
     const consistency = total > 0 ? Math.round((completed / total) * 100) : 0;
-    const longestStreak = state.habits.reduce(
-      (max, h) => Math.max(max, h.streak),
+    const highestStability = state.habits.reduce(
+      (max, h) => Math.max(max, h.stabilityScore),
       0
     );
     return {
       completed,
       consistency,
-      longestStreak,
+      highestStability,
       ritualCount: state.habits.length,
     };
   }, [state]);
@@ -356,7 +356,7 @@ function ProfileCard({
   userName: string;
   userAvatar?: string | null;
   persona: string;
-  stats: { completed: number; consistency: number; longestStreak: number; ritualCount: number };
+  stats: { completed: number; consistency: number; highestStability: number; ritualCount: number };
   onShare: () => void;
   onAvatarClick?: () => void;
   onRemoveAvatar?: () => void;
@@ -434,7 +434,7 @@ function ProfileCard({
         <div className="grid grid-cols-3 gap-3">
           <Stat label="Rituals" value={stats.ritualCount} />
           <Stat label="Completed" value={stats.completed} />
-          <Stat label="Best streak" value={stats.longestStreak} suffix="d" />
+          <Stat label="Stability score" value={Math.round(stats.highestStability)} />
         </div>
 
         {stats.consistency > 0 && (
@@ -492,7 +492,7 @@ function ShareCard({
 }: {
   userName: string;
   persona: string;
-  stats: { completed: number; consistency: number; longestStreak: number; ritualCount: number };
+  stats: { completed: number; consistency: number; highestStability: number; ritualCount: number };
   userAvatar: string | null;
 }) {
   return (
@@ -539,7 +539,7 @@ function ShareCard({
         <div className="mt-auto grid grid-cols-3 gap-4 pt-6 border-t border-white/20">
           <ShareStat label="Rituals" value={stats.ritualCount} />
           <ShareStat label="Done" value={stats.completed} />
-          <ShareStat label="Streak" value={stats.longestStreak} />
+          <ShareStat label="Stability" value={Math.round(stats.highestStability)} />
         </div>
       </div>
     </div>

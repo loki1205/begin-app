@@ -17,7 +17,7 @@ import Link from "next/link";
 const FAQS = [
   {
     q: "What makes Begin different?",
-    a: "Begin is built around one idea: quiet consistency matters more than loud motivation. There is no streak shaming, no notifications begging for your attention, no gamification. Just a calm place to return to.",
+    a: "Begin is built around one idea: quiet consistency matters more than loud motivation. There is no stability shaming, no notifications begging for your attention, no gamification. Just a calm place to return to.",
   },
   {
     q: "Where is my data stored?",
@@ -28,8 +28,8 @@ const FAQS = [
     a: "Because life happens. Skipping is a way to honestly mark a day without breaking your sense of self. It's better than guilt-completion.",
   },
   {
-    q: "How are streaks calculated?",
-    a: "A streak counts consecutive scheduled days you've completed a habit. Skipped or missed days end the streak — gently. Tomorrow is always a beginning.",
+    q: "How is stability score calculated?",
+    a: "Stability score grows with completed scheduled days and gently decreases for missed days. It measures consistency without pressure.",
   },
 ];
 

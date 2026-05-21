@@ -147,11 +147,11 @@ export function HabitRow({ habit, status, onStatusChange, onDelete }: HabitRowPr
           )}
         </div>
 
-        {/* Streak */}
-        {habit.streak > 0 && (
+        {/* Stability score */}
+        {habit.stabilityScore > 0 && (
           <div className="flex items-center gap-1 text-[var(--fg-secondary)] text-sm">
             <Flame className="w-3.5 h-3.5 text-[var(--accent)]" />
-            <span className="font-medium">{habit.streak}</span>
+            <span className="font-medium">{Math.round(habit.stabilityScore)}</span>
           </div>
         )}
       </motion.div>

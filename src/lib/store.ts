@@ -2,7 +2,18 @@
 
 import { useEffect, useState, useCallback } from "react";
 import type { AppState, Habit, HabitLog, HabitStatus, DayKey } from "@/lib/utils";
-import { formatDate, getDayKey } from "@/lib/utils";
+import {
+  formatDate,
+  getDayKey,
+  calculateLevel,
+  clamp,
+  getHabitAgeInDays,
+  getCompletionCount,
+  COMPLETE_REWARD,
+  MISS_PENALTY,
+  MIN_SCORE,
+  MAX_SCORE,
+} from "@/lib/utils";
 
 const STORAGE_KEY = "begin.appstate.v1";
 
@@ -22,8 +33,20 @@ function loadState(): AppState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultState;
-    const parsed = JSON.parse(raw);
-    return { ...defaultState, ...parsed };
+    const parsed = JSON.parse(raw) as any;
+    const logs = Array.isArray(parsed.logs) ? parsed.logs : [];
+    const habits = Array.isArray(parsed.habits)
+      ? parsed.habits.map((h: any) => ({
+          ...h,
+          stabilityScore:
+            typeof h.stabilityScore === "number" ? h.stabilityScore : 0,
+          completionCount:
+            typeof h.completionCount === "number"
+              ? h.completionCount
+              : getCompletionCount(h, logs),
+        }))
+      : [];
+    return { ...defaultState, ...parsed, habits };
   } catch {
     return defaultState;
   }
@@ -32,6 +55,31 @@ function loadState(): AppState {
 function saveState(state: AppState) {
   if (typeof window === "undefined") return;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function getHabitStabilityScore(habit: Habit, logs: HabitLog[]): number {
+  const today = new Date();
+  const created = new Date(habit.createdAt);
+  let score = 0;
+  const endingDate = new Date(today);
+  const todayKey = formatDate(today);
+
+  for (let d = new Date(created); d <= endingDate; d.setDate(d.getDate() + 1)) {
+    const dayKey = getDayKey(d.getDay());
+    if (!habit.days.includes(dayKey)) continue;
+
+    const date = formatDate(d);
+    const log = logs.find((l) => l.habitId === habit.id && l.date === date);
+
+    if (date === todayKey && !log) continue;
+    if (log?.status === "completed") {
+      score += COMPLETE_REWARD;
+    } else {
+      score -= MISS_PENALTY;
+    }
+  }
+
+  return clamp(score, MIN_SCORE, MAX_SCORE);
 }
 
 function setState(updater: (s: AppState) => AppState) {
@@ -69,12 +117,13 @@ export function useAppStore() {
   }, []);
 
   const addHabit = useCallback(
-    (habit: Omit<Habit, "id" | "createdAt" | "streak">) => {
+    (habit: Omit<Habit, "id" | "createdAt" | "stabilityScore" | "completionCount">) => {
       const newHabit: Habit = {
         ...habit,
         id: crypto.randomUUID(),
         createdAt: new Date().toISOString(),
-        streak: 0,
+        stabilityScore: 0,
+        completionCount: 0,
       };
       setState((s) => ({ ...s, habits: [...s.habits, newHabit] }));
       return newHabit;
@@ -96,40 +145,31 @@ export function useAppStore() {
         const existing = s.logs.find(
           (l) => l.habitId === habitId && l.date === date
         );
+
+        if (existing && existing.status === status) {
+          return s;
+        }
+
         let newLogs: HabitLog[];
         if (existing) {
           newLogs = s.logs.map((l) =>
             l.habitId === habitId && l.date === date ? { ...l, status } : l
           );
+        } else if (status === "pending") {
+          newLogs = s.logs;
         } else {
           newLogs = [...s.logs, { habitId, date, status }];
         }
 
-        // recompute streak for habit
         const newHabits = s.habits.map((h) => {
           if (h.id !== habitId) return h;
-          let streak = 0;
-          const today = new Date();
-          for (let i = 0; i < 365; i++) {
-            const d = new Date(today);
-            d.setDate(today.getDate() - i);
-            const dk = getDayKey(d.getDay());
-            if (!h.days.includes(dk)) continue;
-            const log = newLogs.find(
-              (l) => l.habitId === habitId && l.date === formatDate(d)
-            );
-            if (log?.status === "completed") {
-              streak++;
-            } else if (log?.status === "skipped") {
-              break;
-            } else if (i === 0) {
-              // today not yet logged - allow streak count from yesterday
-              continue;
-            } else {
-              break;
-            }
-          }
-          return { ...h, streak };
+          const stabilityScore = getHabitStabilityScore(h, newLogs);
+          const level = calculateLevel(
+            stabilityScore,
+            getHabitAgeInDays(h.createdAt)
+          );
+          const completionCount = getCompletionCount(h, newLogs);
+          return { ...h, stabilityScore, level, completionCount };
         });
 
         return { ...s, logs: newLogs, habits: newHabits };
@@ -144,9 +184,19 @@ export function useAppStore() {
 
   const importData = useCallback((json: string) => {
     try {
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as any;
       if (!parsed.habits || !Array.isArray(parsed.habits)) throw new Error("Invalid");
-      setState(() => ({ ...defaultState, ...parsed }));
+      const logs = Array.isArray(parsed.logs) ? parsed.logs : [];
+      const habits = parsed.habits.map((h: any) => ({
+        ...h,
+        stabilityScore:
+          typeof h.stabilityScore === "number" ? h.stabilityScore : 0,
+        completionCount:
+          typeof h.completionCount === "number"
+            ? h.completionCount
+            : getCompletionCount(h, logs),
+      }));
+      setState(() => ({ ...defaultState, ...parsed, habits }));
       return true;
     } catch {
       return false;
