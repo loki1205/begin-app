@@ -33,37 +33,50 @@ const FAQS = [
   },
 ];
 
-const LINKS = [
-  {
-    title: "GitHub Repository",
-    description: "Source code and releases",
-    icon: Github,
-    href: "https://github.com",
-  },
+/*
+
+
   {
     title: "Contribute",
     description: "Help shape Begin",
     icon: GitPullRequest,
     href: "https://github.com",
   },
-  {
-    title: "Report a bug",
-    description: "Something feel off?",
-    icon: Bug,
-    href: "https://github.com",
-  },
+
   {
     title: "Contributors",
     description: "The people behind it",
     icon: Users,
     href: "https://github.com",
   },
+
+*/
+
+const LINKS = [
   {
-    title: "Support development",
-    description: "Donations keep Begin free",
-    icon: Heart,
-    href: "https://github.com",
+    title: "GitHub Repository",
+    description: "Source code and releases",
+    icon: Github,
+    href: "https://github.com/loki1205/begin-app",
   },
+  {
+    title: "Report a bug",
+    description: "Something feel off?",
+    icon: Bug,
+    href: "https://github.com/loki1205/begin-app/issues",
+  },
+  {
+    title: "Show Appreciation",
+    description: "Share your feedback/love for Begin",
+    icon: Heart,
+    href: "mailto:loknath12502@gmail.com?subject=Appreciation%20for%20Begin&body=Hi%20team%20Begin%2C%0A%0AI%20just%20wanted%20to%20say%20that%20I%20really%20appreciate%20the%20work%20you%27ve%20done%20on%20the%20app.%20It%27s%20been%20a%20game-changer%20for%20me.%0A%0AThanks!",
+  },
+  {
+    title: "Contributors",
+    description: "The people behind it",
+    icon: Users,
+    href: "https://github.com/loki1205/begin-app/graphs/contributors",
+  }
 ];
 
 export default function HelpPage() {
