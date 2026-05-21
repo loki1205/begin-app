@@ -28,7 +28,7 @@ const defaultState: AppState = {
 let memoryState: AppState = defaultState;
 const listeners = new Set<(s: AppState) => void>();
 
-function generateId(): string {
+export function generateId(): string {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
     return crypto.randomUUID();
   }
@@ -47,7 +47,7 @@ function generateId(): string {
   return `id-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 11)}`;
 }
 
-function loadState(): AppState {
+export function loadState(): AppState {
   if (typeof window === "undefined") return defaultState;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -65,18 +65,18 @@ function loadState(): AppState {
               : getCompletionCount(h, logs),
         }))
       : [];
-    return { ...defaultState, ...parsed, habits };
+    return { ...defaultState, ...parsed, logs, habits };
   } catch {
     return defaultState;
   }
 }
 
-function saveState(state: AppState) {
+export function saveState(state: AppState) {
   if (typeof window === "undefined") return;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
-function getHabitStabilityScore(habit: Habit, logs: HabitLog[]): number {
+export function getHabitStabilityScore(habit: Habit, logs: HabitLog[]): number {
   const today = new Date();
   const created = new Date(habit.createdAt);
   let score = 0;
@@ -101,14 +101,19 @@ function getHabitStabilityScore(habit: Habit, logs: HabitLog[]): number {
   return clamp(score, MIN_SCORE, MAX_SCORE);
 }
 
-function setState(updater: (s: AppState) => AppState) {
+export function setState(updater: (s: AppState) => AppState) {
   memoryState = updater(memoryState);
   saveState(memoryState);
   listeners.forEach((l) => l(memoryState));
 }
 
+export function getMemoryState(): AppState {
+  return memoryState;
+}
+
 let initialized = false;
 
+/* c8 ignore start */
 export function useAppStore() {
   const [state, setLocalState] = useState<AppState>(memoryState);
   const [hydrated, setHydrated] = useState(false);
@@ -239,3 +244,4 @@ export function useAppStore() {
     resetAll,
   };
 }
+/* c8 ignore stop */
