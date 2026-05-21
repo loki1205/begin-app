@@ -374,7 +374,7 @@ function ProfileCard({
             <div className="relative">
               <button
                 onClick={onAvatarClick}
-                className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl overflow-hidden flex items-center justify-center bg-gradient-to-br from-[var(--accent)] to-[var(--sage)] text-white font-display text-3xl glossy depth-2"
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl overflow-hidden flex items-center justify-center bg-gradient-to-br from-[var(--accent)] to-[var(--sage)] text-white font-display text-3xl glossy depth-2 relative"
                 aria-label="Change profile photo"
               >
                 {userAvatar ? (
@@ -383,6 +383,16 @@ function ProfileCard({
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     {userName.charAt(0).toUpperCase() || "B"}
+                  </div>
+                )}
+                {isEditing && (
+                  <div
+                    className="absolute inset-0 rounded-3xl flex items-center justify-center bg-black"
+                    style={{
+                      opacity: 0.7,
+                    }}
+                  >
+                    <Edit className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2} />
                   </div>
                 )}
               </button>
