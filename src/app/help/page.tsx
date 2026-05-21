@@ -196,7 +196,7 @@ export default function HelpPage() {
         className="text-center mt-16 mb-8"
       >
         <div className="font-display text-xs italic text-[var(--fg-tertiary)]">
-          made with care · v1.0
+          made with care, for hustlers · v1.0 · 2026
         </div>
       </motion.div>
     </div>

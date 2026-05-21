@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAppStore } from "@/lib/store";
 import { WheelPicker } from "@/components/WheelPicker";
 import { formatDate, cn } from "@/lib/utils";
-import { Check, X } from "lucide-react";
+import { Check, X, ChevronDown } from "lucide-react";
 
 const MONTHS = [
   "January", "February", "March", "April", "May", "June",
@@ -19,6 +19,7 @@ export default function HistoryPage() {
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
   const [day, setDay] = useState(today.getDate());
+  const [isDatePickerExpanded, setIsDatePickerExpanded] = useState(false);
 
   const years = useMemo(() => {
     const arr = [];
@@ -59,7 +60,10 @@ export default function HistoryPage() {
   }, [year, month, day, today]);
 
   const selectedDate = useMemo(() => new Date(year, month, day), [year, month, day]);
-  const dateStr = formatDate(selectedDate);
+  const dateStr = useMemo(() => {
+    // Format date as YYYY-MM-DD without timezone conversion
+    return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  }, [year, month, day]);
 
   const dayLogs = useMemo(() => {
     return state.logs.filter((l) => l.date === dateStr);
@@ -97,42 +101,69 @@ export default function HistoryPage() {
         transition={{ duration: 0.7, delay: 0.1 }}
         className="glass-elevated rounded-3xl p-6 sm:p-8 mb-8"
       >
-        <div className="space-y-1">
-          <WheelPicker
-            label="Year"
-            items={years}
-            value={year}
-            onChange={setYear}
+        <button
+          onClick={() => setIsDatePickerExpanded(!isDatePickerExpanded)}
+          className="w-full flex items-center justify-between mb-4 hover:opacity-70 transition-opacity"
+        >
+          <div>
+            <div className="text-xs uppercase tracking-[0.2em] text-[var(--fg-tertiary)] mb-1">
+              Date
+            </div>
+            <div className="font-display text-2xl tracking-tight text-left">
+              {selectedDate.toLocaleDateString("en-US", {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </div>
+          </div>
+          <ChevronDown
+            className="w-5 h-5 text-[var(--fg-secondary)] transition-transform"
+            style={{
+              transform: isDatePickerExpanded ? "rotate(180deg)" : "rotate(0deg)",
+            }}
           />
-          <div className="h-px bg-[var(--border-subtle)] my-2" />
-          <WheelPicker
-            label="Month"
-            items={months}
-            value={month}
-            onChange={setMonth}
-          />
-          <div className="h-px bg-[var(--border-subtle)] my-2" />
-          <WheelPicker
-            label="Day"
-            items={days}
-            value={day}
-            onChange={setDay}
-          />
-        </div>
+        </button>
 
-        <div className="mt-6 pt-6 border-t border-[var(--border-subtle)] text-center">
-          <div className="text-xs uppercase tracking-[0.2em] text-[var(--fg-tertiary)] mb-2">
-            Showing
-          </div>
-          <div className="font-display text-2xl tracking-tight">
-            {selectedDate.toLocaleDateString("en-US", {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}
-          </div>
-        </div>
+        {isDatePickerExpanded && (
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-1 pt-4 border-t border-[var(--border-subtle)]"
+            >
+              <WheelPicker
+                label="Year"
+                items={years}
+                value={year}
+                onChange={setYear}
+                itemWidth={150}
+                visibleItems={3}
+              />
+              <div className="h-px bg-[var(--border-subtle)] my-2" />
+              <WheelPicker
+                label="Month"
+                items={months}
+                value={month}
+                onChange={setMonth}
+                itemWidth={150}
+                visibleItems={3}
+              />
+              <div className="h-px bg-[var(--border-subtle)] my-2" />
+              <WheelPicker
+                label="Day"
+                items={days}
+                value={day}
+                onChange={setDay}
+                itemWidth={150}
+                visibleItems={3}
+              />
+            </motion.div>
+          </AnimatePresence>
+        )}
       </motion.div>
 
       {/* Results */}
