@@ -10,6 +10,7 @@ const defaultState: AppState = {
   habits: [],
   logs: [],
   userName: "",
+  userAvatar: null,
   onboarded: false,
 };
 
@@ -61,6 +62,10 @@ export function useAppStore() {
 
   const setUserName = useCallback((name: string) => {
     setState((s) => ({ ...s, userName: name, onboarded: true }));
+  }, []);
+
+  const setUserAvatar = useCallback((dataUrl: string | null) => {
+    setState((s) => ({ ...s, userAvatar: dataUrl }));
   }, []);
 
   const addHabit = useCallback(
@@ -156,6 +161,7 @@ export function useAppStore() {
     state,
     hydrated,
     setUserName,
+    setUserAvatar,
     addHabit,
     deleteHabit,
     setHabitStatus,

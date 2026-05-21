@@ -13,19 +13,22 @@ import {
   X,
   Share2,
   Sparkles,
+  Edit,
+  Check,
 } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { useTheme } from "@/components/ThemeProvider";
 import { cn, getPersona } from "@/lib/utils";
 
 export default function ProfilePage() {
-  const { state, exportData, importData, resetAll, hydrated } = useAppStore();
+  const { state, exportData, importData, resetAll, hydrated, setUserAvatar } = useAppStore();
   const { theme, setTheme } = useTheme();
   const [shareOpen, setShareOpen] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [isEditingAvatar, setIsEditingAvatar] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const avatarInputRef = useRef<HTMLInputElement>(null);
   const stats = useMemo(() => {
     const completed = state.logs.filter((l) => l.status === "completed").length;
     const skipped = state.logs.filter((l) => l.status === "skipped").length;
@@ -44,6 +47,14 @@ export default function ProfilePage() {
   }, [state]);
 
   const persona = getPersona(state.habits, state.logs);
+
+  const toggleAvatarEditing = () => {
+    // toggle editing mode; when turning off, simply stop editing
+    setIsEditingAvatar((v) => !v);
+    if (isEditingAvatar) {
+      showToast("Done editing profile photo");
+    }
+  };
 
   const handleExport = () => {
     const data = exportData();
@@ -66,6 +77,19 @@ export default function ProfilePage() {
       showToast(ok ? "Data imported" : "Invalid file");
     };
     reader.readAsText(file);
+    e.target.value = "";
+  };
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string;
+      setUserAvatar(dataUrl);
+      showToast("Profile photo updated");
+    };
+    reader.readAsDataURL(file);
     e.target.value = "";
   };
 
@@ -111,9 +135,14 @@ export default function ProfilePage() {
       >
         <ProfileCard
           userName={state.userName}
+          userAvatar={state.userAvatar ?? null}
           persona={persona}
           stats={stats}
           onShare={() => setShareOpen(true)}
+          isEditing={isEditingAvatar}
+          onToggleAvatarEdit={toggleAvatarEditing}
+          onAvatarClick={isEditingAvatar ? () => avatarInputRef.current?.click() : undefined}
+          onRemoveAvatar={isEditingAvatar ? () => { setUserAvatar(null); showToast("Profile photo removed"); } : undefined}
         />
       </motion.div>
 
@@ -159,7 +188,7 @@ export default function ProfilePage() {
             onClick={handleExport}
             className="w-full glass rounded-2xl px-5 py-4 flex items-center gap-4 hover:bg-[var(--bg-tint)] transition-colors text-left"
           >
-            <Download className="w-5 h-5 text-[var(--accent)]" strokeWidth={1.6} />
+            <Upload className="w-5 h-5 text-[var(--accent)]" strokeWidth={1.6} />
             <div>
               <div className="text-[15px] tracking-tight">Export data</div>
               <div className="text-xs text-[var(--fg-tertiary)] mt-0.5">
@@ -171,7 +200,7 @@ export default function ProfilePage() {
             onClick={() => fileInputRef.current?.click()}
             className="w-full glass rounded-2xl px-5 py-4 flex items-center gap-4 hover:bg-[var(--bg-tint)] transition-colors text-left"
           >
-            <Upload className="w-5 h-5 text-[var(--accent)]" strokeWidth={1.6} />
+            <Download className="w-5 h-5 text-[var(--accent)]" strokeWidth={1.6} />
             <div>
               <div className="text-[15px] tracking-tight">Import data</div>
               <div className="text-xs text-[var(--fg-tertiary)] mt-0.5">
@@ -184,6 +213,13 @@ export default function ProfilePage() {
             type="file"
             accept=".json,application/json"
             onChange={handleImport}
+            className="hidden"
+          />
+          <input
+            ref={avatarInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleAvatarChange}
             className="hidden"
           />
         </SettingsSection>
@@ -252,6 +288,7 @@ export default function ProfilePage() {
               className="w-full max-w-md"
             >
               <ShareCard
+                userAvatar={state.userAvatar ?? null}
                 userName={state.userName}
                 persona={persona}
                 stats={stats}
@@ -297,14 +334,24 @@ function SettingsSection({
 
 function ProfileCard({
   userName,
+  userAvatar,
   persona,
   stats,
   onShare,
+  onAvatarClick,
+  onRemoveAvatar,
+  isEditing,
+  onToggleAvatarEdit,
 }: {
   userName: string;
+  userAvatar?: string | null;
   persona: string;
   stats: { completed: number; consistency: number; longestStreak: number; ritualCount: number };
   onShare: () => void;
+  onAvatarClick?: () => void;
+  onRemoveAvatar?: () => void;
+  isEditing?: boolean;
+  onToggleAvatarEdit?: () => void;
 }) {
   return (
     <div className="relative glass-elevated rounded-3xl overflow-hidden">
@@ -315,9 +362,29 @@ function ProfileCard({
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center gap-4">
             <div className="relative">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-br from-[var(--accent)] to-[var(--sage)] flex items-center justify-center text-white font-display text-3xl glossy depth-2">
-                {userName.charAt(0).toUpperCase() || "B"}
-              </div>
+              <button
+                onClick={onAvatarClick}
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl overflow-hidden flex items-center justify-center bg-gradient-to-br from-[var(--accent)] to-[var(--sage)] text-white font-display text-3xl glossy depth-2"
+                aria-label="Change profile photo"
+              >
+                {userAvatar ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={userAvatar} alt={userName || "avatar"} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    {userName.charAt(0).toUpperCase() || "B"}
+                  </div>
+                )}
+              </button>
+              {userAvatar && onRemoveAvatar && (
+                <button
+                  onClick={onRemoveAvatar}
+                  className="absolute -top-1 -right-1 w-7 h-7 rounded-full glass-subtle flex items-center justify-center"
+                  aria-label="Remove profile photo"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
             </div>
             <div>
               <div className="text-[10px] uppercase tracking-[0.25em] text-[var(--fg-tertiary)] mb-1">
@@ -328,13 +395,26 @@ function ProfileCard({
               </div>
             </div>
           </div>
-          <button
-            onClick={onShare}
-            className="w-10 h-10 rounded-full glass-subtle flex items-center justify-center hover:bg-[var(--bg-tint)] transition-colors"
-            aria-label="Share"
-          >
-            <Share2 className="w-4 h-4" strokeWidth={1.6} />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onToggleAvatarEdit?.()}
+              className="w-10 h-10 rounded-full glass-subtle flex items-center justify-center hover:bg-[var(--bg-tint)] transition-colors"
+              aria-label={isEditing ? "Done editing" : "Edit profile"}
+            >
+              {isEditing ? (
+                <Check className="w-4 h-4" strokeWidth={1.6} />
+              ) : (
+                <Edit className="w-4 h-4" strokeWidth={1.6} />
+              )}
+            </button>
+            <button
+              onClick={onShare}
+              className="w-10 h-10 rounded-full glass-subtle flex items-center justify-center hover:bg-[var(--bg-tint)] transition-colors"
+              aria-label="Share"
+            >
+              <Share2 className="w-4 h-4" strokeWidth={1.6} />
+            </button>
+          </div>
         </div>
 
         <p className="text-[var(--fg-secondary)] italic font-display text-lg leading-relaxed mb-8 text-balance">
@@ -398,10 +478,12 @@ function ShareCard({
   userName,
   persona,
   stats,
+  userAvatar,
 }: {
   userName: string;
   persona: string;
   stats: { completed: number; consistency: number; longestStreak: number; ritualCount: number };
+  userAvatar: string | null;
 }) {
   return (
     <div className="aspect-[4/5] rounded-3xl overflow-hidden relative glossy depth-3">
@@ -415,11 +497,23 @@ function ShareCard({
       }} />
 
       <div className="absolute inset-0 p-8 flex flex-col text-white">
-        <div className="flex items-center gap-2 mb-auto">
-          <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center">
-            <Sparkles className="w-4 h-4" strokeWidth={1.6} />
-          </div>
-          <div className="text-xs uppercase tracking-[0.3em] opacity-80">begin</div>
+        <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center">
+                <Sparkles className="w-4 h-4" strokeWidth={1.6} />
+              </div>
+              <div className="text-xs uppercase tracking-[0.3em] opacity-80">begin</div>
+            </div>
+            <div className="w-16 h-16">
+              {userAvatar ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={userAvatar} alt={userName || "avatar"} className="w-full h-full object-cover rounded-[50%]" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    {userName.charAt(0).toUpperCase() || "B"}
+                  </div>
+                )}
+            </div>
         </div>
 
         <div className="my-auto">

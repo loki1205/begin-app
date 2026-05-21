@@ -19,9 +19,9 @@
   --fg-tertiary: #8A8F99;
   --fg-quaternary: #B4B8C0;
 
-  --accent: #6E78B8;
+  --accent: #004fe1;
   --accent-bg: rgba(110, 120, 184, 0.08);
-  --sage: #7E997D;
+  --sage: #0cbaba;
 
   --glass-bg: rgba(255, 255, 255, 0.55);
   --glass-border: rgba(255, 255, 255, 0.7);
@@ -44,9 +44,9 @@
   --fg-tertiary: #6B6F78;
   --fg-quaternary: #44484F;
 
-  --accent: red;
+  --accent: #9381FF;
   --accent-bg: rgba(139, 146, 201, 0.12);
-  --sage: red;
+  --sage: #6EB4D1;
 
   --glass-bg: rgba(27, 31, 39, 0.55);
   --glass-border: rgba(255, 255, 255, 0.06);

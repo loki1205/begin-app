@@ -121,8 +121,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           {/* User chip */}
           {state.userName && (
             <div className="mt-6 pt-6 border-t border-[var(--border-subtle)] flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--sage)] flex items-center justify-center text-white font-medium text-sm glossy">
-                {state.userName.charAt(0).toUpperCase()}
+              <div className="w-9 h-9 rounded-full overflow-hidden bg-gradient-to-br from-[var(--accent)] to-[var(--sage)] flex items-center justify-center text-white font-medium text-sm glossy">
+                {state.userAvatar ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={state.userAvatar}
+                    alt={`${state.userName} avatar`}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  state.userName.charAt(0).toUpperCase()
+                )}
               </div>
               <div className="min-w-0">
                 <div className="text-sm font-medium truncate">

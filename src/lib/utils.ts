@@ -51,6 +51,7 @@ export interface AppState {
   habits: Habit[];
   logs: HabitLog[];
   userName: string;
+  userAvatar?: string | null;
   onboarded: boolean;
 }
 

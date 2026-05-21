@@ -126,7 +126,7 @@ export default function OnboardingPage() {
                 }}
                 placeholder="your name"
                 maxLength={32}
-                className="w-full text-center text-3xl font-display bg-transparent border-0 border-b border-[var(--border-strong)] focus:border-[var(--accent)] outline-none py-4 placeholder:text-[var(--fg-quaternary)] placeholder:italic transition-colors"
+                className="w-full text-center text-3xl font-display bg-transparent border-0 border-b border-[var(--border-strong)] focus:border-[var(--accent)] !outline-none py-4 placeholder:text-[var(--fg-quaternary)] placeholder:italic transition-colors !rounded-none"
               />
             </motion.div>
 
