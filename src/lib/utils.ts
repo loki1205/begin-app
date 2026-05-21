@@ -87,12 +87,18 @@ export function getScoreBasedLevel(score: number): number {
   return 5; // Anchor
 }
 
+export const LEVEL_NAMES = ["Seed", "Sprout", "Root", "Flow", "Anchor"] as const;
+
 export function getAgeBasedMaxLevel(ageInDays: number): number {
   if (ageInDays < 3) return 1;
   if (ageInDays < 10) return 2;
   if (ageInDays < 21) return 3;
   if (ageInDays < 45) return 4;
   return 5;
+}
+
+export function getLevelName(level: number): string {
+  return LEVEL_NAMES[level - 1] ?? LEVEL_NAMES[0];
 }
 
 export function calculateLevel(stabilityScore: number, ageInDays: number): number {
