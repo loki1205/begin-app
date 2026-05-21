@@ -99,7 +99,7 @@ export function HabitRow({ habit, status, onStatusChange, onDelete }: HabitRowPr
         {/* Checkbox */}
         <button
           onClick={handleCheckbox}
-          className="relative shrink-0 focus:outline-none"
+          className="relative shrink-0 focus:outline-none min-w-[44px] min-h-[44px] flex items-center justify-center -m-2 p-2"
           aria-label={isCompleted ? "Mark incomplete" : "Mark complete"}
         >
           <motion.div

@@ -32,7 +32,7 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 relative overflow-hidden">
       {/* Floating decorative shapes */}
       <motion.div
         animate={{
@@ -40,7 +40,7 @@ export default function OnboardingPage() {
           rotate: [0, 5, 0],
         }}
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[15%] left-[10%] w-32 h-32 rounded-[40%] bg-gradient-to-br from-[var(--accent)]/15 to-[var(--sage)]/10 blur-xl"
+        className="absolute top-[15%] left-[10%] w-20 h-20 sm:w-32 sm:h-32 rounded-[40%] bg-gradient-to-br from-[var(--accent)]/15 to-[var(--sage)]/10 blur-xl"
       />
       <motion.div
         animate={{
@@ -48,7 +48,7 @@ export default function OnboardingPage() {
           x: [0, -20, 0],
         }}
         transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        className="absolute bottom-[20%] right-[15%] w-40 h-40 rounded-full bg-gradient-to-br from-[var(--sage)]/15 to-[var(--accent)]/10 blur-2xl"
+        className="absolute bottom-[20%] right-[15%] w-24 h-24 sm:w-40 sm:h-40 rounded-full bg-gradient-to-br from-[var(--sage)]/15 to-[var(--accent)]/10 blur-2xl"
       />
 
       <AnimatePresence mode="wait">
@@ -65,7 +65,7 @@ export default function OnboardingPage() {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              className="font-display text-7xl sm:text-8xl tracking-tight leading-[0.95] mb-8"
+              className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[0.95] mb-6 sm:mb-8"
             >
               <span className="block opacity-40">small</span>
               <span className="block">rituals</span>
@@ -76,7 +76,7 @@ export default function OnboardingPage() {
               initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.6, duration: 0.8 }}
-              className="text-[var(--fg-secondary)] text-lg max-w-md mx-auto text-balance"
+              className="text-[var(--fg-secondary)] text-base sm:text-lg max-w-md mx-auto text-balance px-4 sm:px-0"
             >
               A quiet place to return to. Track the small things that make you who
               you&rsquo;re becoming.
@@ -126,7 +126,7 @@ export default function OnboardingPage() {
                 }}
                 placeholder="your name"
                 maxLength={32}
-                className="w-full text-center text-3xl font-display bg-transparent border-0 border-b border-[var(--border-strong)] focus:border-[var(--accent)] !outline-none py-4 placeholder:text-[var(--fg-quaternary)] placeholder:italic transition-colors !rounded-none"
+                className="w-full text-center text-2xl sm:text-3xl font-display bg-transparent border-0 border-b border-[var(--border-strong)] focus:border-[var(--accent)] !outline-none py-4 placeholder:text-[var(--fg-quaternary)] placeholder:italic transition-colors !rounded-none"
               />
             </motion.div>
 

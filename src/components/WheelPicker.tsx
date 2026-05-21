@@ -18,29 +18,45 @@ const DEFAULT_VISIBLE = 4; // odd
 export function WheelPicker({ label, items, value, onChange, itemWidth = DEFAULT_ITEM_WIDTH, visibleItems = DEFAULT_VISIBLE }: WheelPickerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isScrolling, setIsScrolling] = useState(false);
+  const [responsiveItemWidth, setResponsiveItemWidth] = useState(itemWidth);
   const scrollTimeout = useRef<ReturnType<typeof setTimeout>>();
+
+  // Handle responsive sizing
+  useEffect(() => {
+    if (itemWidth !== DEFAULT_ITEM_WIDTH) {
+      setResponsiveItemWidth(itemWidth);
+      return;
+    }
+    
+    const handleResize = () => {
+      setResponsiveItemWidth(window.innerWidth < 640 ? 60 : 90);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [itemWidth]);
 
   // Scroll to value on mount/change
   useEffect(() => {
     const idx = items.findIndex((i) => i.value === value);
     if (idx >= 0 && containerRef.current) {
-      containerRef.current.scrollTo({ left: idx * itemWidth, behavior: "auto" });
+      containerRef.current.scrollTo({ left: idx * responsiveItemWidth, behavior: "auto" });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [value, responsiveItemWidth, items]);
 
   const handleScroll = () => {
     setIsScrolling(true);
     if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
     scrollTimeout.current = setTimeout(() => {
       if (!containerRef.current) return;
-      const idx = Math.round(containerRef.current.scrollLeft / itemWidth);
+      const idx = Math.round(containerRef.current.scrollLeft / responsiveItemWidth);
       const clamped = Math.max(0, Math.min(items.length - 1, idx));
       const target = items[clamped];
       if (target && !target.disabled) {
         onChange(target.value);
         containerRef.current.scrollTo({
-          left: clamped * itemWidth,
+          left: clamped * responsiveItemWidth,
           behavior: "smooth",
         });
       } else {
@@ -48,7 +64,7 @@ export function WheelPicker({ label, items, value, onChange, itemWidth = DEFAULT
         const prevIdx = items.findIndex((i) => i.value === value);
         if (prevIdx >= 0) {
           containerRef.current.scrollTo({
-            left: prevIdx * itemWidth,
+            left: prevIdx * responsiveItemWidth,
             behavior: "smooth",
           });
         }
@@ -57,8 +73,8 @@ export function WheelPicker({ label, items, value, onChange, itemWidth = DEFAULT
     }, 150);
   };
 
-  const containerWidth = itemWidth * visibleItems;
-  const padding = itemWidth * Math.floor(visibleItems / 2);
+  const containerWidth = responsiveItemWidth * visibleItems;
+  const padding = responsiveItemWidth * Math.floor(visibleItems / 2);
 
   return (
     <div className="flex flex-col items-center">
@@ -74,7 +90,7 @@ export function WheelPicker({ label, items, value, onChange, itemWidth = DEFAULT
           className="absolute top-0 bottom-0 pointer-events-none z-10 border-x border-[var(--border-subtle)]"
           style={{
             left: padding,
-            width: itemWidth,
+            width: responsiveItemWidth,
           }}
         />
 
@@ -117,7 +133,7 @@ export function WheelPicker({ label, items, value, onChange, itemWidth = DEFAULT
                     : "text-[var(--fg-tertiary)] text-base",
                   item.disabled && "text-[var(--fg-quaternary)] opacity-50"
                 )}
-                style={{ width: itemWidth }}
+                style={{ width: responsiveItemWidth }}
               >
                 {item.label}
               </div>

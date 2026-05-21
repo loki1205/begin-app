@@ -25,7 +25,7 @@ export default function SplashPage() {
   }, [hydrated, state.onboarded, router]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center relative px-6">
+    <div className="min-h-screen flex flex-col items-center justify-center relative px-4 sm:px-6">
       <AnimatePresence>
         {!exiting && (
           <motion.div
@@ -41,27 +41,27 @@ export default function SplashPage() {
               initial={{ scale: 0.7, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-              className="relative mb-12"
+              className="relative mb-8 sm:mb-12"
             >
               {/* Concentric rings - breathing */}
               <motion.div
                 animate={{ scale: [1, 1.08, 1], opacity: [0.3, 0.5, 0.3] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute inset-0 -m-12 rounded-full border border-[var(--accent)]/20"
+                className="absolute inset-0 -m-8 sm:-m-12 rounded-full border border-[var(--accent)]/20"
               />
               <motion.div
                 animate={{ scale: [1, 1.12, 1], opacity: [0.2, 0.4, 0.2] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                className="absolute inset-0 -m-20 rounded-full border border-[var(--accent)]/15"
+                className="absolute inset-0 -m-14 sm:-m-20 rounded-full border border-[var(--accent)]/15"
               />
               <motion.div
                 animate={{ scale: [1, 1.15, 1], opacity: [0.1, 0.3, 0.1] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="absolute inset-0 -m-28 rounded-full border border-[var(--accent)]/10"
+                className="absolute inset-0 -m-20 sm:-m-28 rounded-full border border-[var(--accent)]/10"
               />
 
               {/* Center mark */}
-              <div className="relative w-20 h-20 rounded-3xl bg-gradient-to-br from-[var(--accent)] to-[var(--sage)] flex items-center justify-center glossy depth-3">
+              <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-br from-[var(--accent)] to-[var(--sage)] flex items-center justify-center glossy depth-3">
                 <svg viewBox="0 0 24 24" className="w-10 h-10 text-white" fill="none">
                   <circle cx="12" cy="12" r="3" fill="currentColor" />
                   <circle cx="12" cy="12" r="7" stroke="currentColor" strokeWidth="1.2" opacity="0.5" />
@@ -74,7 +74,7 @@ export default function SplashPage() {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="font-display text-6xl sm:text-7xl tracking-tight mb-3"
+              className="font-display text-5xl sm:text-6xl md:text-7xl tracking-tight mb-3"
               style={{ fontVariationSettings: "'opsz' 144" }}
             >
               begin
@@ -84,7 +84,7 @@ export default function SplashPage() {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="text-[var(--fg-secondary)] text-center max-w-sm italic font-display text-lg"
+              className="text-[var(--fg-secondary)] text-center max-w-xs sm:max-w-sm italic font-display text-base sm:text-lg"
             >
               &ldquo;{quote}&rdquo;
             </motion.p>

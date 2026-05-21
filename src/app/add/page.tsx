@@ -51,7 +51,7 @@ export default function AddHabitPage() {
         <div className="text-xs uppercase tracking-[0.2em] text-[var(--fg-tertiary)] mb-2">
           Add ritual
         </div>
-        <h1 className="font-display text-4xl sm:text-5xl tracking-tight">
+        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl tracking-tight">
           A new beginning.
         </h1>
         <p className="text-[var(--fg-secondary)] mt-3">

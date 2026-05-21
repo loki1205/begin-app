@@ -94,14 +94,26 @@ body::before {
 .ambient-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
+  filter: blur(40px);
   opacity: 0.5;
   animation: float 16s ease-in-out infinite;
 }
 
+@media (min-width: 768px) {
+  .ambient-orb {
+    filter: blur(80px);
+  }
+}
+
 .dark .ambient-orb {
   opacity: 0.25;
-  filter: blur(100px);
+  filter: blur(60px);
+}
+
+@media (min-width: 768px) {
+  .dark .ambient-orb {
+    filter: blur(100px);
+  }
 }
 
 .ambient-orb-1 {
@@ -305,4 +317,26 @@ body::before {
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.4),
     0 20px 48px rgba(0, 0, 0, 0.5);
+}
+
+/* Landscape optimizations */
+@media (max-height: 500px) and (orientation: landscape) {
+  .min-h-screen {
+    min-height: auto;
+  }
+  
+  main {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+}
+
+/* Remove scrollbar from webkit browsers */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

@@ -89,7 +89,7 @@ export default function HistoryPage() {
         <div className="text-xs uppercase tracking-[0.2em] text-[var(--fg-tertiary)] mb-2">
           Looking back
         </div>
-        <h1 className="font-display text-4xl sm:text-5xl tracking-tight">
+        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl tracking-tight">
           History
         </h1>
       </motion.div>
