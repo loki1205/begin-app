@@ -1,29 +1,16 @@
 {
-  "name": "begin-app",
+  "name": "begin-app-monorepo",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "app/web",
+    "app/ios",
+    "app/android"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "next": "15.0.3",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "framer-motion": "^11.11.17",
-    "lucide-react": "^0.460.0",
-    "clsx": "^2.1.1",
-    "tailwind-merge": "^2.5.4"
-  },
-  "devDependencies": {
-    "@types/node": "^22",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.49",
-    "tailwindcss": "^3.4.15",
-    "typescript": "^5"
+    "web:dev": "npm --workspace app/web run dev",
+    "web:build": "npm --workspace app/web run build",
+    "web:start": "npm --workspace app/web run start",
+    "web:lint": "npm --workspace app/web run lint"
   }
 }
