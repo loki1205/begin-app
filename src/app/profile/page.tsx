@@ -165,7 +165,7 @@ export default function ProfilePage() {
       >
         {/* Theme */}
         <SettingsSection title="Appearance">
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
             {[
               { value: "light", label: "Light", icon: Sun },
               { value: "dark", label: "Dark", icon: Moon },
@@ -369,8 +369,8 @@ function ProfileCard({
       <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent)]/8 via-transparent to-[var(--sage)]/8" />
 
       <div className="relative p-6 sm:p-8">
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between mb-6">
+          <div className="flex items-center gap-4 min-w-0">
             <div className="relative">
               <button
                 onClick={onAvatarClick}
@@ -441,7 +441,7 @@ function ProfileCard({
           &ldquo;{persona}&rdquo;
         </p>
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <Stat label="Rituals" value={stats.ritualCount} />
           <Stat label="Completed" value={stats.completed} />
           <Stat label="Stability score" value={Math.round(stats.highestStability)} />
@@ -546,7 +546,7 @@ function ShareCard({
           </div>
         </div>
 
-        <div className="mt-auto grid grid-cols-3 gap-4 pt-6 border-t border-white/20">
+        <div className="mt-auto grid grid-cols-1 gap-4 pt-6 border-t border-white/20 sm:grid-cols-3">
           <ShareStat label="Rituals" value={stats.ritualCount} />
           <ShareStat label="Done" value={stats.completed} />
           <ShareStat label="Stability" value={Math.round(stats.highestStability)} />

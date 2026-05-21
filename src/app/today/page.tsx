@@ -65,13 +65,13 @@ export default function TodayPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="flex items-start justify-between mb-10 lg:mb-14"
+        className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between mb-10 lg:mb-14"
       >
-        <div>
+        <div className="min-w-0">
           <div className="text-xs uppercase tracking-[0.2em] text-[var(--fg-tertiary)] mb-2">
             {greeting}{state.userName && `, ${state.userName}`}
           </div>
-          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl tracking-tight leading-tight\">
+          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl tracking-tight leading-tight">
             {dateStr}
           </h1>
           <div className="text-sm text-[var(--fg-secondary)] mt-2 tabular-nums">
@@ -81,7 +81,7 @@ export default function TodayPage() {
 
         {/* Progress ring */}
         {total > 0 && (
-          <div className=\"relative w-16 h-16 sm:w-20 sm:h-20 shrink-0 aspect-square\">
+          <div className="relative w-16 h-16 sm:w-20 sm:h-20 shrink-0 aspect-square">
             <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
               <circle
                 cx="50"

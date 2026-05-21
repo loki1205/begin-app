@@ -23,19 +23,16 @@ export function WheelPicker({ label, items, value, onChange, itemWidth = DEFAULT
 
   // Handle responsive sizing
   useEffect(() => {
-    if (itemWidth !== DEFAULT_ITEM_WIDTH) {
-      setResponsiveItemWidth(itemWidth);
-      return;
-    }
-    
     const handleResize = () => {
-      setResponsiveItemWidth(window.innerWidth < 640 ? 60 : 90);
+      const available = Math.max(60, Math.floor((window.innerWidth - 48) / Math.max(visibleItems, 3)));
+      const width = Math.min(itemWidth, available);
+      setResponsiveItemWidth(width);
     };
 
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [itemWidth]);
+  }, [itemWidth, visibleItems]);
 
   // Scroll to value on mount/change
   useEffect(() => {
