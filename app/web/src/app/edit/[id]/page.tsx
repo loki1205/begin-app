@@ -14,7 +14,7 @@ export default function EditHabitPage() {
   const habitId = params?.id;
   const { state, hydrated, updateHabit } = useAppStore();
 
-  const habit = state.habits.find((h) => h.id === habitId);
+  const habit = state.habits.find((h) => h.id === habitId)!;
   const [name, setName] = useState("");
   const [days, setDays] = useState<DayKey[]>([]);
 
