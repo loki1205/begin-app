@@ -46,6 +46,7 @@ export interface HabitLog {
   habitId: string;
   date: string;
   status: HabitStatus;
+  habitName?: string;
 }
 
 export interface AppState {

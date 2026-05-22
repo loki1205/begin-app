@@ -195,7 +195,10 @@ export default function HistoryPage() {
                   return (
                     <LogRow
                       key={log.habitId}
-                      name={habit?.name ?? "Removed habit"}
+                      name={
+                        habit?.name ??
+                        (log.habitName ? `${log.habitName} (removed)` : "Removed habit")
+                      }
                       icon="check"
                     />
                   );
@@ -213,7 +216,10 @@ export default function HistoryPage() {
                   return (
                     <LogRow
                       key={log.habitId}
-                      name={habit?.name ?? "Removed habit"}
+                      name={
+                        habit?.name ??
+                        (log.habitName ? `${log.habitName} (removed)` : "Removed habit")
+                      }
                       icon="skip"
                       muted
                     />

@@ -155,13 +155,56 @@ export function useAppStore() {
     []
   );
 
-  const deleteHabit = useCallback((id: string) => {
-    setState((s) => ({
-      ...s,
-      habits: s.habits.filter((h) => h.id !== id),
-      logs: s.logs.filter((l) => l.habitId !== id),
-    }));
+  const deleteHabit = useCallback((id: string, keepLogs = false) => {
+    setState((s) => {
+      const habitToRemove = s.habits.find((h) => h.id === id);
+      if (!habitToRemove) return s;
+
+      return {
+        ...s,
+        habits: s.habits.filter((h) => h.id !== id),
+        logs: keepLogs
+          ? s.logs.map((l) =>
+              l.habitId === id && !l.habitName
+                ? { ...l, habitName: habitToRemove.name }
+                : l
+            )
+          : s.logs.filter((l) => l.habitId !== id),
+      };
+    });
   }, []);
+
+  const updateHabit = useCallback(
+    (updatedHabit: Omit<Habit, "stabilityScore" | "completionCount">) => {
+      setState((s) => {
+        const existing = s.habits.find((h) => h.id === updatedHabit.id);
+        if (!existing) return s;
+
+        const habitForCalc = {
+          ...updatedHabit,
+          stabilityScore: existing.stabilityScore,
+          completionCount: existing.completionCount,
+        } as Habit;
+
+        const stabilityScore = getHabitStabilityScore(habitForCalc, s.logs);
+        const level = calculateLevel(
+          stabilityScore,
+          getHabitAgeInDays(updatedHabit.createdAt)
+        );
+        const completionCount = getCompletionCount(habitForCalc, s.logs);
+
+        return {
+          ...s,
+          habits: s.habits.map((h) =>
+            h.id === updatedHabit.id
+              ? { ...updatedHabit, stabilityScore, level, completionCount }
+              : h
+          ),
+        };
+      });
+    },
+    []
+  );
 
   const setHabitStatus = useCallback(
     (habitId: string, date: string, status: HabitStatus) => {
@@ -237,6 +280,7 @@ export function useAppStore() {
     setUserName,
     setUserAvatar,
     addHabit,
+    updateHabit,
     deleteHabit,
     setHabitStatus,
     exportData,
