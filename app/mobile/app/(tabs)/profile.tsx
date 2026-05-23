@@ -18,13 +18,12 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
-import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import { useAppStore } from "@/lib/store";
 import { useTheme } from "@/components/ThemeProvider";
 import { getPersona } from "@/lib/utils";
 import { Image } from "react-native";
-
+import { File, Directory, Paths } from "expo-file-system";
 export default function ProfilePage() {
   const router = useRouter();
   const { state, exportData, importData, resetAll, hydrated, setUserAvatar } = useAppStore();
@@ -78,15 +77,21 @@ export default function ProfilePage() {
     }
   };
 
+
   const handleExport = async () => {
     const data = exportData();
-    const fileUri = FileSystem.cacheDirectory + `begin-export-${new Date().toISOString().split("T")[0]}.json`;
-    await FileSystem.writeAsStringAsync(fileUri, data);
-    if (await Sharing.isAvailableAsync()) {
-      await Sharing.shareAsync(fileUri, { mimeType: "application/json" });
-    } else {
-      Alert.alert("Export", "Sharing is not available on this device");
-    }
+
+    const filename = `begin-export-${new Date()
+      .toISOString()
+      .split("T")[0]}.json`;
+
+    const file = new File(Paths.cache, filename);
+
+    file.write(data);
+
+    await Sharing.shareAsync(file.uri, {
+      mimeType: "application/json",
+    });
   };
 
   const handleImport = async () => {
@@ -95,11 +100,20 @@ export default function ProfilePage() {
         type: "application/json",
         copyToCacheDirectory: true,
       });
+
       if (result.canceled || !result.assets?.[0]) return;
-      const content = await FileSystem.readAsStringAsync(result.assets[0].uri);
+
+      const file = new File(result.assets[0].uri);
+
+      const content = await file.text();
+
       const ok = importData(content);
-      Alert.alert(ok ? "Data imported" : "Invalid file", ok ? "Your data has been restored." : "The file could not be read.");
-    } catch {
+
+      Alert.alert(
+        ok ? "Success" : "Invalid file",
+        ok ? "Your data has been restored." : "Could not import data"
+      );
+    } catch (e) {
       Alert.alert("Error", "Could not import file");
     }
   };
