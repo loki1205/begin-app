@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "Begin",
+    "slug": "begin-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "scheme": "begin",
+    "assetBundlePatterns": ["**/*"],
+
+    "ios": {
+      "icon": "./assets/icon-ios.png",
+      "supportsTablet": true,
+      "bundleIdentifier": "com.begin.app"
+    },
+
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FBFAF7"
+      },
+      "package": "com.begin.app"
+    },
+
+    "platforms": ["ios", "android"],
+
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#FBFAF7",
+
+          "dark": {
+            "backgroundColor": "#111111"
+          }
+        }
+      ],
+
+      "expo-router",
+      "expo-font",
+      "expo-asset"
+    ],
+
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "eb5fb493-a171-4bb6-a762-67888374092f"
+      }
+    }
+  }
+}

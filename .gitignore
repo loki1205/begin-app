@@ -4,3 +4,6 @@ out
 .DS_Store
 *.log
 .env*.local
+.expo
+app/mobile/android
+app/mobile/ios
