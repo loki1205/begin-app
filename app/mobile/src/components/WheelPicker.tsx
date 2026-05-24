@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { View, Text, ScrollView, StyleSheet, Dimensions } from "react-native";
 import { useTheme } from "@/components/ThemeProvider";
 
@@ -25,9 +25,6 @@ export function WheelPicker({
   const { colors } = useTheme();
   const scrollRef = useRef<ScrollView>(null);
   const scrollTimeout = useRef<ReturnType<typeof setTimeout>>();
-  const [containerWidth, setContainerWidth] = useState(
-    Math.min(Dimensions.get("window").width - 48, itemWidth * visibleItems)
-  );
 
   const responsiveItemWidth = Math.min(
     itemWidth,
@@ -37,12 +34,20 @@ export function WheelPicker({
   const finalContainerWidth = responsiveItemWidth * visibleItems;
   const padding = responsiveItemWidth * Math.floor(visibleItems / 2);
 
+  const initialIndex = Math.max(0, items.findIndex((i) => i.value === value));
+
+  // Local value tracks the snapped position immediately, without waiting
+  // for the parent to re-render in response to onChange.
+  const [localValue, setLocalValue] = useState(value);
+
+  // Sync if parent changes value externally
   useEffect(() => {
+    setLocalValue(value);
     const idx = items.findIndex((i) => i.value === value);
     if (idx >= 0 && scrollRef.current) {
-      scrollRef.current.scrollTo({ x: idx * responsiveItemWidth, animated: false });
+      scrollRef.current.scrollTo({ x: idx * responsiveItemWidth, animated: true });
     }
-  }, [value, responsiveItemWidth, items]);
+  }, [value]);
 
   const handleScroll = (event: any) => {
     const offsetX = event.nativeEvent.contentOffset.x;
@@ -52,18 +57,13 @@ export function WheelPicker({
       const clamped = Math.max(0, Math.min(items.length - 1, idx));
       const target = items[clamped];
       if (target && !target.disabled) {
+        setLocalValue(target.value);
         onChange(target.value);
-        scrollRef.current?.scrollTo({
-          x: clamped * responsiveItemWidth,
-          animated: true,
-        });
+        scrollRef.current?.scrollTo({ x: clamped * responsiveItemWidth, animated: true });
       } else {
-        const prevIdx = items.findIndex((i) => i.value === value);
+        const prevIdx = items.findIndex((i) => i.value === localValue);
         if (prevIdx >= 0) {
-          scrollRef.current?.scrollTo({
-            x: prevIdx * responsiveItemWidth,
-            animated: true,
-          });
+          scrollRef.current?.scrollTo({ x: prevIdx * responsiveItemWidth, animated: true });
         }
       }
     }, 150);
@@ -73,7 +73,6 @@ export function WheelPicker({
     <View style={styles.container}>
       <Text style={[styles.label, { color: colors.fgTertiary }]}>{label}</Text>
       <View style={[styles.pickerContainer, { width: finalContainerWidth }]}>
-        {/* Selection highlight */}
         <View
           style={[
             styles.selectionHighlight,
@@ -93,20 +92,17 @@ export function WheelPicker({
           decelerationRate="fast"
           onScroll={handleScroll}
           scrollEventThrottle={16}
-          contentContainerStyle={{
-            paddingHorizontal: padding,
-          }}
+          // KEY FIX: contentOffset sets the initial scroll position declaratively
+          // at render time, before layout. This works even when the component
+          // mounts inside a conditionally rendered tree where imperative
+          // scrollTo calls (in useEffect / onLayout) fire too early and no-op.
+          contentOffset={{ x: initialIndex * responsiveItemWidth, y: 0 }}
+          contentContainerStyle={{ paddingHorizontal: padding }}
         >
           {items.map((item) => {
-            const isSelected = item.value === value;
+            const isSelected = item.value === localValue;
             return (
-              <View
-                key={item.value}
-                style={[
-                  styles.item,
-                  { width: responsiveItemWidth },
-                ]}
-              >
+              <View key={item.value} style={[styles.item, { width: responsiveItemWidth }]}>
                 <Text
                   style={[
                     isSelected ? styles.selectedText : styles.itemText,
