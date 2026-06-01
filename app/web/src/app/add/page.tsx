@@ -71,14 +71,25 @@ export default function AddHabitPage() {
             What habit?
           </label>
           <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Read for ten minutes"
-            maxLength={64}
-            autoFocus
-            className="w-full bg-transparent border-0 border-b border-[var(--border-strong)] focus:border-[var(--accent)] py-3 text-2xl font-display tracking-tight placeholder:text-[var(--fg-quaternary)] rounded-none placeholder:italic transition-colors !rounded-none !outline-none"
-          />
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Read for ten minutes"
+                maxLength={64}
+                autoFocus
+                className="
+                  w-full bg-transparent border-0 border-b
+                  border-[var(--border-strong)]
+                  focus:border-[var(--accent)]
+                  py-3
+                  text-lg sm:text-xl md:text-2xl
+                  font-display tracking-tight
+                  placeholder:text-[var(--fg-quaternary)]
+                  placeholder:italic
+                  rounded-none transition-colors
+                  !rounded-none !outline-none
+                "
+              />
         </div>
 
         {/* Day selector */}

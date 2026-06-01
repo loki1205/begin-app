@@ -137,7 +137,7 @@ export default function TasksPage() {
             <div className="w-full max-w-[680px] glass rounded-3xl p-6 sm:p-8 border border-red-200 shadow-[0_35px_60px_-35px_rgba(0,0,0,0.35)]">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <div className="text-sm font-semibold text-red-600">
+              <div className="text-lg font-semibold text-red-600">
                 Delete ritual?
               </div>
               <p className="text-[13px] text-[var(--fg-secondary)] mt-2">
@@ -162,7 +162,7 @@ export default function TasksPage() {
                 deleteHabit(deleteTarget.id, true);
                 setDeleteTarget(null);
               }}
-              className="w-full inline-flex items-center justify-center rounded-2xl bg-[var(--sage)] text-white px-4 py-3 font-medium transition hover:opacity-90"
+              className="w-full inline-flex items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--accent)] to-[var(--sage)] text-white px-4 py-3 font-medium transition hover:opacity-90"
             >
               Keep logs and delete ritual
             </button>
