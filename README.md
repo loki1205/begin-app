@@ -89,8 +89,8 @@ A habit can remain tiny forever and still mature.
 ```txt
 app/
 ├── web/
-├── ios/        (coming soon)
-├── android/    (coming soon)
+├── ios/        (code is ready but App Store is expensive)
+├── android/
 └── shared/
 ```
 
